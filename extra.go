@@ -2,6 +2,6 @@ package main
 
 import "os"
 
-func cleanup() {
-	os.Remove("other.txt")
+func cleanup() error {
+	return os.Remove("other.txt")
 }

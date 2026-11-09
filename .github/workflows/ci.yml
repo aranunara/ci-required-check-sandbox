@@ -1,0 +1,23 @@
+name: ci
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+jobs:
+  test:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: test ! -f FAIL
+  ci-ok:
+    name: ${{ github.event.pull_request.draft && 'ci-draft' || 'ci-ok' }}
+    needs: [test]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ github.event.pull_request.draft }}
+        run: echo "draft - not checked"
+      - if: ${{ !github.event.pull_request.draft && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')) }}
+        run: exit 1

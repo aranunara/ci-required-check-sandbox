@@ -3,5 +3,7 @@ package main
 import "os"
 
 func main() {
-	os.Remove("tmp.txt")
+	if err := os.Remove("tmp.txt"); err != nil {
+		panic(err)
+	}
 }
